@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- log 레벨을 INFO로 지정한 것 -->
+<Configuration status="INFO" >
+    <properties>
+        <property name="pattern">%t>
+            [%d{yyyy-MM-dd HH:mm:ss}] [%c{1}] [%L] [%p] %m %n</property>
+        <property name="queryLog">debug</property>
+    </properties>
+
+    <appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <!-- 콘솔창에 log가 찍힐 내용의 포맷(?)을 지정  -->
+            <PatternLayout pattern=
+                                   "[%d{yyyy-MM-dd HH:mm:ss}] [%-5level] [%t]
+                [%logger{36}(%L)] - %m %n"
+            />
+        </Console>
+
+        <!-- log 파일을 저장하는 위치와 정책 -->
+        <!-- fileName : 파일저장할 위치, filePattern : 파일명 패턴 -->
+        <RollingFile name="dailyout" fileName="/jb_log/imsout.log"
+                     filePattern="/jb_log/imsout.log_%d{yyyyMMddHH}">
+            <PatternLayout>
+                <!-- 위의 property의 패턴을 그대로 가져온다 -->
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true"
+                                           interval="24" />
+                <!-- Rotated everyday -->
+            </Policies>
+            <!-- 파일 갯수를 1000개로 유지 -->
+            <DefaultRolloverStrategy max="1000" fileIndex="min" />
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <!-- name : 사용하는 logger class 혹은 패키지 명 -->
+        <!-- level : log레벨 중 1택  -->
+        <!-- additivity : flase일 경우 root로그와 중복으로 찍히는 것을 방지 -->
+        <logger name="egovframework" level="DEBUG" additivity="false">
+
+            <!-- appender-ref : 로그의 출력 방식을 설정
+            (위의 appender을 참조하는 것) -->
+            <appender-ref ref="dailyout" level="DEBUG" />
+        </logger>
+    </loggers>
+
+    <!-- root는 default log라고 보면된다. *꼭 입력 -->
+    <!-- 레벨을 너무 낮게 설정하면 이것저것 너무 다 찍힘 -->
+    <!-- 기본적인 log이기 때문에 위에서 additivity를 false로 설정해서 중복을 피한 것 -->
+    <!-- appender-ref : 해당 log 레벨로 어느정도까지 일을 수행할지 지정
+    (위의 name이 console 인것 수행) -->
+    <root level="error">
+        <appender-ref ref="console" />
+    </root>
+
+</Configuration>
